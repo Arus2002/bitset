@@ -47,50 +47,80 @@ bitset<N>::bitset(const std::string& bits)
 }
 
 template <std::size_t N>
-void bitset<N>::set(std::size_t index, bool bit) {
-    if (index < 0  index >= N) {
-        throw std::range_error("Index can't be negative or greater than size of bits!");
-    }
-    if (bit) {
-        ++m_count_flag;
-        std::size_t bits_array_index = index / BITS_PER_UNIT;
-        std::size_t bit_index = index % BITS_PER_UNIT;
-        m_bits_array[bits_array_index] |= (1U << bit_index);
-    }
-    else {
-        std::size_t bits_array_index = index / BITS_PER_UNIT;
-        std::size_t bit_index = index % BITS_PER_UNIT;
-        m_bits_array[bits_array_index] &= ~(1U << bit_index);
-    }
+bitset<N>::bitset(const bitset& other)
+    : m_count_flag{other.m_count_flag}
+    , m_size{other.m_size}
+    , m_bits_array{other.m_bits_array} 
+{}
+
+template <std::size_t N>
+bitset<N>::bitset(bitset&& other) noexcept
+    : m_count_flag{other.m_count_flag}
+    , m_size{other.m_size}
+    , m_bits_array{std::move(other.m_bits_array)} 
+{
+    other.m_count_flag = 0;
+    other.m_size = 0;
 }
 
 template <std::size_t N>
-void bitset<N>::reset(std::size_t index) {
-    if (index < 0  index >= N) {
-        throw std::range_error("Index can't be negative or greater than size of bits!");
+bitset<N>& bitset<N>::operator=(const bitset& other) {
+    if (this == &other) {
+        return *this;
     }
-    std::size_t bits_array_index = index / BITS_PER_UNIT;
-    std::size_t bit_index = index % BITS_PER_UNIT;
-    if ((m_bits_array[bits_array_index] & (1U << bit_index))) {
-        --m_count_flag;
-        m_bits_array[bits_array_index] &= ~(1U << bit_index);
-    }
+    m_count_flag = other.m_count_flag;
+    m_size = other.m_size;
+    m_bits_array = other.m_bits_array;
+
+    return *this;
 }
 
 template <std::size_t N>
-void bitset<N>::flip() {
-    for (int i = 0; i < m_size; ++i) {
-        m_bits_array[i] = ~m_bits_array[i];
+bitset<N>& bitset<N>::operator=(bitset&& other) noexcept {
+    if (this == &other) {
+        return *this;
     }
+    
+    m_count_flag = other.m_count_flag;
+    m_size = other.m_size;
+    m_bits_array = std::move(other.m_bits_array);
+
+    other.m_size = 0;
+    other.m_count_flag = 0;
+
+    return *this;
 }
 
 template <std::size_t N>
-void bitset<N>::flip(std::size_t index) {
-    if (index < 0  index >= N) {
-        throw std::range_error("Index can't be negative or greater than size of bits!");
+unsigned long bitset<N>::to_ulong() const {
+    unsigned long result = 0;
+    for (int i = N - 1; i >= 0; --i) {
+        std::size_t bits_array_index = i / BITS_PER_UNIT;
+        std::size_t bit_index = i % BITS_PER_UNIT;
+        int bit = (m_bits_array[bits_array_index] & (1U << bit_index));
+        //std::cout << bits_array_index << " " << bit_index << " " << i << " "<< bit << std::endl;
+        if (sizeof(result + bit * std::pow(2, i)) > sizeof(unsigned long)) {
+            throw std::range_error("You can't represent this number in unsigned long!");
+        }
+        result += bit * std::pow(2, i);   
     }
-    bool bit = (m_bits_array[bits_array_index] & (1U << bit_index));
-    set(index, !bit);
+    return result;
+}
+
+template <std::size_t N>
+unsigned long long bitset<N>::to_ullong() const {
+    unsigned long long result = 0;
+    for (int i = N - 1; i >= 0; --i) {
+        std::size_t bits_array_index = i / BITS_PER_UNIT;
+        std::size_t bit_index = i % BITS_PER_UNIT;
+        bool bit = (m_bits_array[bits_array_index] & (1U << bit_index));
+        //std::cout << bits_array_index << " " << bit_index << " " << i << " "<< bit << std::endl;
+        if (sizeof(result + bit * std::pow(2, i)) > sizeof(unsigned long long)) {
+            throw std::range_error("You can't represent this number in unsigned long!");
+        }
+        result += bit * std::pow(2, i);   
+    }
+    return result;
 }
 
 template <std::size_t N>
@@ -112,49 +142,52 @@ std::string bitset<N>::to_string() const {
 }
 
 template <std::size_t N>
-unsigned long bitset<N>::to_ulong() const {
-    if (N >= BITS_PER_UNIT) {
-        throw std::range_error("You can't convert this number to unsigned long!");
+void bitset<N>::set(std::size_t index, bool bit) {
+    if (index < 0 || index >= N) {
+        throw std::range_error("Index can't be negative or greater than size of bits!");
     }
-    unsigned long result = 0;
-    for (int i = N - 1; i >= 0; --i) {
-        std::size_t bits_array_index = i / BITS_PER_UNIT;
-        std::size_t bit_index = i % BITS_PER_UNIT;
-        int bit = (m_bits_array[bits_array_index] & (1U << bit_index));
-        //std::cout << bits_array_index << " " << bit_index << " " << i << " "<< bit << std::endl;
-        result += bit * std::pow(2, i);   
+    if (bit) {
+        ++m_count_flag;
+        std::size_t bits_array_index = index / BITS_PER_UNIT;
+        std::size_t bit_index = index % BITS_PER_UNIT;
+        m_bits_array[bits_array_index] |= (1U << bit_index);
     }
-    return result;
+    else {
+        std::size_t bits_array_index = index / BITS_PER_UNIT;
+        std::size_t bit_index = index % BITS_PER_UNIT;
+        m_bits_array[bits_array_index] &= ~(1U << bit_index);
+    }
 }
 
 template <std::size_t N>
-unsigned long long bitset<N>::to_ullong() const {
-    unsigned long long result = 0;
-    for (int i = N - 1; i >= 0; --i) {
-        std::size_t bits_array_index = i / BITS_PER_UNIT;
-        std::size_t bit_index = i % BITS_PER_UNIT;
-        bool bit = (m_bits_array[bits_array_index] & (1U << bit_index));
-        //std::cout << bits_array_index << " " << bit_index << " " << i << " "<< bit << std::endl;
-        result += bit * std::pow(2, i);   
-    }
-    return result;
-}
-
-template <std::size_t N>
-bool bitset<N>::operator[](std::size_t index) const {
-    std::size_t bits_array_index = index / BITS_PER_UNIT;
-    std::size_t bit_index = index % BITS_PER_UNIT;
-    return (m_bits_array[bits_array_index] & (1U << bit_index)) != 0;
-}
-
-template <std::size_t N>
-bool bitset<N>::test(std::size_t index) const {
-    if (index < 0  index >= N) {
-        throw std::out_of_range("Index out of range");
+void bitset<N>::reset(std::size_t index) {
+    if (index < 0 || index >= N) {
+        throw std::range_error("Index can't be negative or greater than size of bits!");
     }
     std::size_t bits_array_index = index / BITS_PER_UNIT;
     std::size_t bit_index = index % BITS_PER_UNIT;
-    return (m_bits_array[bits_array_index] & (1U << bit_index)) != 0;
+    if ((m_bits_array[bits_array_index] & (1U << bit_index))) {
+        --m_count_flag;
+        m_bits_array[bits_array_index] &= ~(1U << bit_index);
+    }
+}
+
+template <std::size_t N>
+void bitset<N>::flip() {
+    for (int i = 0; i < m_size; ++i) {
+        m_bits_array[i] = ~m_bits_array[i];
+    }
+}
+
+template <std::size_t N>
+void bitset<N>::flip(std::size_t index) {
+    if (index < 0 || index >= N) {
+        throw std::range_error("Index can't be negative or greater than size of bits!");
+    }
+    std::size_t bits_array_index = index / BITS_PER_UNIT;
+    std::size_t bit_index = index % BITS_PER_UNIT;
+    bool bit = (m_bits_array[bits_array_index] & (1U << bit_index));
+    set(index, !bit);
 }
 
 template <std::size_t N>
@@ -180,6 +213,171 @@ std::size_t bitset<N>::count() const {
 template <std::size_t N>
 std::size_t bitset<N>::size() const {
     return N;
+}
+
+template <std::size_t N>
+bool bitset<N>::operator[](std::size_t index) {
+    std::size_t bits_array_index = index / BITS_PER_UNIT;
+    std::size_t bit_index = index % BITS_PER_UNIT;
+    return (m_bits_array[bits_array_index] & (1U << bit_index)) != 0;
+}
+
+template <std::size_t N>
+bool bitset<N>::operator[](std::size_t index) const {
+    std::size_t bits_array_index = index / BITS_PER_UNIT;
+    std::size_t bit_index = index % BITS_PER_UNIT;
+    return (m_bits_array[bits_array_index] & (1U << bit_index)) != 0;
+}
+
+template <std::size_t N>
+bool bitset<N>::test(std::size_t index) const {
+    if (index < 0 || index >= N) {
+        throw std::out_of_range("Index out of range");
+    }
+    std::size_t bits_array_index = index / BITS_PER_UNIT;
+    std::size_t bit_index = index % BITS_PER_UNIT;
+    return (m_bits_array[bits_array_index] & (1U << bit_index)) != 0;
+}
+
+template <std::size_t N>
+bitset<N>& bitset<N>::operator&=(const bitset<N>& other) {
+    if (m_size != other.m_size) {
+        throw std::range_error("Not equal bitsets");
+    }
+    for (int i = 0; i < m_size; ++i) {
+        m_bits_array[i] &= other.m_bits_array[i];
+    }
+    return *this;
+}
+
+template <std::size_t N>
+bitset<N>& bitset<N>::operator|=(const bitset<N>& other) {
+    if (m_size != other.m_size) {
+        throw std::range_error("Not equal bitsets");
+    }
+    for (int i = 0; i < m_size; ++i) {
+        m_bits_array[i] |= other.m_bits_array[i];
+    }
+    return *this;
+}
+
+template <std::size_t N>
+bitset<N>& bitset<N>::operator^=(const bitset<N>& other) {
+    if (m_size != other.m_size) {
+        throw std::range_error("Not equal bitsets");
+    }
+    for (int i = 0; i < m_size; ++i) {
+        m_bits_array[i] ^= other.m_bits_array[i];
+    }
+    return *this;
+}
+
+template <std::size_t N>
+bitset<N> bitset<N>::operator~() const {
+    bitset<N> tmp = *this;
+    for (int i = 0; i < m_size; ++i) {
+        tmp[i] =  ~m_bits_array[i];
+    }
+    return tmp;
+}
+
+template <std::size_t N>
+bitset<N> bitset<N>::operator<<(std::size_t pos) const {
+    if (pos < 0) {
+        throw std::out_of_range("Index is negative");
+    }
+    bitset<N> result;
+    if (pos >= N) {
+        return result;
+    }
+    std::size_t unit_shift = pos / BITS_PER_UNIT;
+    std::size_t bit_shift = pos % BITS_PER_UNIT;
+    for (int i = 0; i < m_bits_array.size(); ++i) {
+        std::size_t target_index = i + unit_shift;
+        if (target_index >= m_bits_array.size()) {
+            break;
+        }
+        result.m_bits_array[target_index] |= (m_bits_array[i] << bit_shift);
+        if (bit_shift > 0 && target_index + 1 < m_bits_array.size()) {
+            result.m_bits_array[target_index + 1] |= (m_bits_array[i] >> (BITS_PER_UNIT - bit_shift));
+        }
+    }
+    return result;
+}
+
+template <std::size_t N>
+bitset<N> bitset<N>::operator>>(std::size_t pos) const {
+    if (pos < 0) {
+        throw std::out_of_range("Index is negative");
+    }
+    bitset<N> result;
+    if (pos >= N) {
+        return result;
+    }
+    std::size_t unit_shift = pos / BITS_PER_UNIT;
+    std::size_t bit_shift = pos % BITS_PER_UNIT;
+    for (int i = 0; i < m_bits_array.size(); ++i) {
+        std::size_t target_index = 0;
+        if (i > unit_shift) {
+            target_index = i - unit_shift;
+        }
+        if (target_index >= m_bits_array.size()) {
+            continue;;
+        }
+        result.m_bits_array[target_index] |= (m_bits_array[i] >> bit_shift);
+        if (bit_shift > 0 && target_index > 0) {
+            result.m_bits_array[target_index - 1] |= (m_bits_array[i] << (BITS_PER_UNIT - bit_shift));
+        }
+    }
+    return result;
+}
+
+template< std::size_t N>
+bitset<N> operator&(const bitset<N>& lhs, const bitset<N>& rhs) {
+    bitset<N> result;
+
+    for (std::size_t i = 0; i < lhs.m_size; ++i) {
+        result.m_bits_array[i] = lhs.m_bits_array[i] & rhs.m_bits_array[i];
+    }
+
+    return result;
+}
+
+template< std::size_t N>
+bitset<N> operator|(const bitset<N>& lhs, const bitset<N>& rhs) {
+    bitset<N> result;
+
+    for (std::size_t i = 0; i < lhs.m_size; ++i) {
+        result.m_bits_array[i] = lhs.m_bits_array[i] | rhs.m_bits_array[i];
+    }
+
+    return result;
+}
+
+template< std::size_t N>
+bitset<N> operator^(const bitset<N>& lhs, const bitset<N>& rhs) {
+    bitset<N> result;
+
+    for (std::size_t i = 0; i < lhs.m_size; ++i) {
+        result.m_bits_array[i] = lhs.m_bits_array[i] ^ rhs.m_bits_array[i];
+    }
+
+    return result;
+}
+
+template <std::size_t N>
+std::ostream& operator<<(std::ostream& os, const bitset<N>& bs) {
+    std::string bits = bs.to_string();
+    os << bits;
+    return os;
+}
+
+template <std::size_t N>
+std::istream& operator>>(std::istream& is, bitset<N>& bs) {
+    std::string bits;
+    is >> bits;
+    bs = bitset<N>(bits);
+    return is;
 }
 
 template <std::size_t N>
