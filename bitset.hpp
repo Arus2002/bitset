@@ -55,6 +55,8 @@ public:
     bitset& operator<<=(std::size_t pos);
     bitset operator>>(std::size_t pos) const;
     bitset& operator>>=(std::size_t pos);
+    bool operator==(const bitset& other) const;
+    bool operator!=(const bitset& other) const;
 
     template<std::size_t M>
     friend bitset<M> operator&(const bitset<M>& lhs, const bitset<M>& rhs);

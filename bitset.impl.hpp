@@ -95,14 +95,15 @@ template <std::size_t N>
 unsigned long bitset<N>::to_ulong() const {
     unsigned long result = 0;
     for (int i = N - 1; i >= 0; --i) {
-        if (test(i) && i > sizeof(unsigned long) * 8) {
+        if (test(i) && i >= sizeof(unsigned long) * 8) {
             throw std::range_error("This number can't be represented in unsigned long!");
         }
         std::size_t bits_array_index = i / BITS_PER_UNIT;
         std::size_t bit_index = i % BITS_PER_UNIT;
-        int bit = (m_bits_array[bits_array_index] & (1U << bit_index));
-        //std::cout << bits_array_index << " " << bit_index << " " << i << " "<< bit << std::endl;
-        result += bit * std::pow(2, i);   
+        bool bit = (m_bits_array[bits_array_index] & (1U << bit_index));
+        if(test(i)) {
+            result |= 1UL << i;
+        } 
     }
     return result;
 }
@@ -111,14 +112,14 @@ template <std::size_t N>
 unsigned long long bitset<N>::to_ullong() const {
     unsigned long long result = 0;
     for (int i = N - 1; i >= 0; --i) {
-        if (test(i) && i > sizeof(unsigned long long) * 8) {
+        if (test(i) && i >= sizeof(unsigned long long) * 8) {
             throw std::range_error("This number can't be represented in unsigned long long!");
         }
         std::size_t bits_array_index = i / BITS_PER_UNIT;
         std::size_t bit_index = i % BITS_PER_UNIT;
-        bool bit = (m_bits_array[bits_array_index] & (1U << bit_index));
-        //std::cout << bits_array_index << " " << bit_index << " " << i << " "<< bit << std::endl;
-        result += bit * std::pow(2, i);   
+        if(test(i)) {
+            result |= 1ULL << i;
+        }
     }
     return result;
 }
@@ -320,20 +321,17 @@ bitset<N> bitset<N>::operator>>(std::size_t pos) const {
         return result;
     }
     std::size_t unit_shift = pos / BITS_PER_UNIT;
-    std::size_t bit_shift = pos % BITS_PER_UNIT;
-    for (int i = 0; i < m_bits_array.size(); ++i) {
-        std::size_t target_index = 0;
-        if (i > unit_shift) {
-            target_index = i - unit_shift;
+    std::size_t bit_shift = pos % BITS_PER_UNIT;  
+    for (int i = 0; i < m_size; ++i) {
+        int target_index = i + unit_shift;
+        result.m_bits_array[i] = m_bits_array[target_index] >> bit_shift;
+        if (i != m_size - unit_shift - 1) {
+            result.m_bits_array[i] |= (m_bits_array[target_index + 1] << (BITS_PER_UNIT - bit_shift));
+        } 
+        if (i >= m_size - unit_shift) {
+            result.m_bits_array[i] = 0;
         }
-        if (target_index >= m_bits_array.size()) {
-            continue;
-        }
-        result.m_bits_array[target_index] |= (m_bits_array[i] >> bit_shift);
-        if (bit_shift > 0 && target_index > 0) {
-            result.m_bits_array[target_index - 1] |= (m_bits_array[i] << (BITS_PER_UNIT - bit_shift));
-        }
-    }
+    }    
     return result;
 }
 
@@ -389,6 +387,17 @@ std::istream& operator>>(std::istream& is, bitset<N>& bs) {
     is >> bits;
     bs = bitset<N>(bits);
     return is;
+}
+
+template <std::size_t N>
+bool bitset<N>::operator==(const bitset& other) const {
+    return m_bits_array == other.m_bits_array &&
+           m_count_flag == other.m_count_flag;
+}
+
+template <std::size_t N>
+bool bitset<N>::operator!=(const bitset& other) const {
+    return !(*this == other);
 }
 
 template <std::size_t N>
