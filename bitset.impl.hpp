@@ -276,7 +276,7 @@ template <std::size_t N>
 bitset<N> bitset<N>::operator~() const {
     bitset<N> tmp = *this;
     for (int i = 0; i < m_size; ++i) {
-        tmp[i] =  ~m_bits_array[i];
+        tmp.m_bits_array[i] =  ~m_bits_array[i];
     }
     return tmp;
 }
