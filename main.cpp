@@ -2,6 +2,28 @@
 #include <bitset>
 
 int main() {
+    //Ex. 1
+    std::bitset<64> bs(2345);
+    bs.set(2);
+    bs.reset(33);
+
+    std::cout << bs.to_string() << " " << bs.to_ullong() << std::endl;
+    bs <<= 56;
+    std::cout << bs.to_ullong() << std::endl;
+    bs >>= 4;
+    std::cout << bs.to_string() << std::endl;
+
+    bitset<64> bset(2345);
+
+    bset.set(2);
+    bset.reset(33);
+
+    std::cout << bset.to_string() << " " << bset.to_ullong() << std::endl;
+    bset <<= 56;
+    std::cout << bset.to_ullong() << std::endl;
+    bset >>= 4;
+    std::cout << bset.to_string() << std::endl;
+
     //Ex. 2
     // std::bitset<18> b1("110011");
     // std::bitset<18> b2("000001");

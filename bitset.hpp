@@ -8,8 +8,8 @@ template <std::size_t N>
 class bitset {
 public:
     bitset();
-    bitset(unsigned long value);
-    bitset(const std::string& bits);
+    explicit bitset(unsigned long value);
+    explicit bitset(const std::string& bits);
     bitset(const bitset& other);
     bitset(bitset&& other) noexcept;
     bitset& operator=(const bitset& other);
@@ -30,7 +30,20 @@ public:
     std::size_t count() const;
     std::size_t size() const;
 
-    bool operator[](std::size_t index);
+private:
+    class Proxy {
+    public:
+        Proxy(bitset<N>& bits, std::size_t pos);
+        Proxy& operator=(bool value);
+        operator bool() const;
+
+    private:
+        bitset<N>& bits;
+        std::size_t pos;
+    };
+
+public:
+    Proxy operator[](std::size_t index);
     bool operator[](std::size_t index) const;
     bool test(std::size_t index) const;
 
@@ -39,7 +52,9 @@ public:
     bitset& operator^=(const bitset& other);
     bitset operator~() const;
     bitset operator<<(std::size_t pos) const;
+    bitset& operator<<=(std::size_t pos);
     bitset operator>>(std::size_t pos) const;
+    bitset& operator>>=(std::size_t pos);
 
     template<std::size_t M>
     friend bitset<M> operator&(const bitset<M>& lhs, const bitset<M>& rhs);
