@@ -13,15 +13,15 @@ int main() {
     bs >>= 4;
     std::cout << "Standart to_string after right shift: " << bs.to_string() << std::endl;
 
-    // bitset<64> bset(2345);
-    // bset.set(2);
-    // bset.reset(33);
-    // std::cout << "My bitset to_ulong after set and reset: " << bset.to_ulong() << std::endl;
-    // std::cout << "My bitset to_string after set and reset: " << bset.to_string() << std::endl;
-    // bset <<= 56;
-    // std::cout << "My bitset to_ullong after left shift: " << bset.to_ullong() << std::endl;
-    // bset >>= 4;
-    // std::cout << "My bitset to_string after right shift: " << bset.to_string() << std::endl;
+    bitset<64> bset(2345);
+    bset.set(2);
+    bset.reset(33);
+    std::cout << "My bitset to_ulong after set and reset: " << bset.to_ulong() << std::endl;
+    std::cout << "My bitset to_string after set and reset: " << bset.to_string() << std::endl;
+    bset <<= 56;
+    std::cout << "My bitset to_ullong after left shift: " << bset.to_ullong() << std::endl;
+    bset >>= 4;
+    std::cout << "My bitset to_string after right shift: " << bset.to_string() << std::endl;
 
     //Ex. 2
     // std::bitset<18> b1("110011");
