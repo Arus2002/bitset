@@ -1,27 +1,29 @@
-#include "bitset.hpp"
-#include <bitset>
+#include <gtest/gtest.h>
 
-int main() {
+int main(int argc, char **argv) {
+    ::testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
+
     //Ex. 1
-    std::bitset<64> bs(2345);
-    bs.set(2);
-    bs.reset(33);
-    std::cout << "Standart to_ulong after set and reset: " << bs.to_ulong() << std::endl;
-    std::cout << "Standart to_string after set and reset: " << bs.to_string() << std::endl;
-    bs <<= 56;
-    std::cout << "Standart to_ullong after left shift: " << bs.to_ullong() << std::endl;
-    bs >>= 4;
-    std::cout << "Standart to_string after right shift: " << bs.to_string() << std::endl;
+    //std::bitset<64> bs(2345);
+    //bs.set(2);
+    //bs.reset(33);
+    //std::cout << "Standart to_ulong after set and reset: " << bs.to_ulong() << std::endl;
+    //std::cout << "Standart to_string after set and reset: " << bs.to_string() << std::endl;
+    //bs <<= 56;
+    //std::cout << "Standart to_ullong after left shift: " << bs.to_ullong() << std::endl;
+    //bs >>= 4;
+    //std::cout << "Standart to_string after right shift: " << bs.to_string() << std::endl;
 
-    bitset<64> bset(2345);
-    bset.set(2);
-    bset.reset(33);
-    std::cout << "My bitset to_ulong after set and reset: " << bset.to_ulong() << std::endl;
-    std::cout << "My bitset to_string after set and reset: " << bset.to_string() << std::endl;
-    bset <<= 56;
-    std::cout << "My bitset to_ullong after left shift: " << bset.to_ullong() << std::endl;
-    bset >>= 4;
-    std::cout << "My bitset to_string after right shift: " << bset.to_string() << std::endl;
+    //bitset<64> bset(2345);
+    //bset.set(2);
+    //bset.reset(33);
+    //std::cout << "My bitset to_ulong after set and reset: " << bset.to_ulong() << std::endl;
+    //std::cout << "My bitset to_string after set and reset: " << bset.to_string() << std::endl;
+    //bset <<= 56;
+    //std::cout << "My bitset to_ullong after left shift: " << bset.to_ullong() << std::endl;
+    //bset >>= 4;
+    //std::cout << "My bitset to_string after right shift: " << bset.to_string() << std::endl;
 
     //Ex. 2
     // std::bitset<18> b1("110011");

@@ -47,51 +47,6 @@ bitset<N>::bitset(const std::string& bits)
 }
 
 template <std::size_t N>
-bitset<N>::bitset(const bitset& other)
-    : m_count_flag{other.m_count_flag}
-    , m_size{other.m_size}
-    , m_bits_array{other.m_bits_array} 
-{}
-
-template <std::size_t N>
-bitset<N>::bitset(bitset&& other) noexcept
-    : m_count_flag{other.m_count_flag}
-    , m_size{other.m_size}
-    , m_bits_array{std::move(other.m_bits_array)} 
-{
-    other.m_count_flag = 0;
-    other.m_size = 0;
-}
-
-template <std::size_t N>
-bitset<N>& bitset<N>::operator=(const bitset& other) {
-    if (this == &other) {
-        return *this;
-    }
-    m_count_flag = other.m_count_flag;
-    m_size = other.m_size;
-    m_bits_array = other.m_bits_array;
-
-    return *this;
-}
-
-template <std::size_t N>
-bitset<N>& bitset<N>::operator=(bitset&& other) noexcept {
-    if (this == &other) {
-        return *this;
-    }
-    
-    m_count_flag = other.m_count_flag;
-    m_size = other.m_size;
-    m_bits_array = std::move(other.m_bits_array);
-
-    other.m_size = 0;
-    other.m_count_flag = 0;
-
-    return *this;
-}
-
-template <std::size_t N>
 unsigned long bitset<N>::to_ulong() const {
     unsigned long result = 0;
     for (int i = N - 1; i >= 0; --i) {

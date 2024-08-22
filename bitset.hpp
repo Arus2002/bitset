@@ -10,11 +10,7 @@ public:
     bitset();
     explicit bitset(unsigned long value);
     explicit bitset(const std::string& bits);
-    bitset(const bitset& other);
-    bitset(bitset&& other) noexcept;
-    bitset& operator=(const bitset& other);
-    bitset& operator=(bitset&& other) noexcept;
-
+    
     unsigned long to_ulong() const;
     unsigned long long to_ullong() const;
     std::string to_string() const;
