@@ -22,6 +22,6 @@ cmake --build .
 It will create executable file: Bitset
 
 # Usage
-Now, you can run the executable to start the scheduling process:
+Now, you can run the executable to start testing:
 ./Bitset
 
