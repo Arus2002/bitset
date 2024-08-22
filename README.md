@@ -8,6 +8,7 @@ https://github.com/Arus2002/bitset.git
 
 # Navigate to the project directory
 cd bitset
+git submodule update --init --recursive
 
 # Create directory for build
 mkdir build

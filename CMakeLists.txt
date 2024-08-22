@@ -15,11 +15,9 @@ add_executable(Bitset
     tests/bitset_test5.cpp
     tests/bitset_test6.cpp)
 
-find_package(GTest REQUIRED)
-include_directories(${GTEST_INCLUDE_DIRS})
-
-target_link_libraries(Bitset ${GTEST_LIBRARIES} pthread)
-
+add_subdirectory(googletest)
+include_directories(googletest/googletest/include)
+target_link_libraries(Bitset gtest gtest_main)
 
 set(SOURCE_DIR ${CMAKE_SOURCE_DIR})
 set(DEST_DIR "${CMAKE_BINARY_DIR}")
