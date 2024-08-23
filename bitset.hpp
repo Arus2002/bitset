@@ -67,7 +67,7 @@ public:
     friend std::istream& operator>>(std::istream& is, bitset<M>& bs);
 
 private:
-    void checkForCorrectString(const std::string& bits) const;
+    void check_for_correct_string(const std::string& bits) const;
 
 private:
     int m_count_flag;

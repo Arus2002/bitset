@@ -33,16 +33,16 @@ bitset<N>::bitset(const std::string& bits)
     , m_size{(N + BITS_PER_UNIT - 1) / (BITS_PER_UNIT)}
     , m_bits_array(m_size, 0)
 {
-    checkForCorrectString(bits);
-    int settingBit = 0;
+    check_for_correct_string(bits);
+    int setting_bit = 0;
     for (int i = bits.size() - 1; i >= 0; --i) {
         if (bits[i] == '1') {
-            set(settingBit);
+            set(setting_bit);
         }
         else {
-            set(settingBit, false);
+            set(setting_bit, false);
         }
-        ++settingBit;
+        ++setting_bit;
     }   
 }
 
@@ -356,7 +356,7 @@ bool bitset<N>::operator!=(const bitset& other) const {
 }
 
 template <std::size_t N>
-void bitset<N>::checkForCorrectString(const std::string& bits) const {
+void bitset<N>::check_for_correct_string(const std::string& bits) const {
     if (bits.size() > N) {
         throw std::range_error("Bits you have provided have greater size than the size of bitset.");
     }
